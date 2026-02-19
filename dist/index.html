@@ -1,326 +1,219 @@
-<!doctype html>
-<html lang="pt-br">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>RendaBot 24h - Simulador + Ideias</title>
-  <meta name="description" content="Simulador educativo de renda extra + gerador de ideias. Robô gera páginas SEO automaticamente todo dia."/>
+<!doctype html><html lang="pt-br"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RendaBot 24h - Páginas</title>
+  <meta name="description" content="Lista de páginas geradas automaticamente.">
   <style>
-    body{font-family:system-ui,Arial;margin:0;background:#0b0f14;color:#e9eef5;}
-    .wrap{max-width:980px;margin:0 auto;padding:22px;}
-    .grid{display:grid;grid-template-columns:1fr;gap:14px}
-    @media(min-width:900px){.grid{grid-template-columns:1.2fr .8fr}}
-    .card{background:#121a24;border:1px solid #1e2a3a;border-radius:16px;padding:16px}
-    h1{margin:0 0 8px;font-size:26px}
-    h2{margin:0 0 10px;font-size:18px}
-    label{display:block;font-size:13px;color:#b8c6da;margin:10px 0 6px}
-    input,select{width:100%;padding:10px;border-radius:12px;border:1px solid #263449;background:#0f1722;color:#e9eef5}
-    button{padding:10px 14px;border-radius:12px;border:1px solid #2a3a52;background:#162233;color:#e9eef5;cursor:pointer}
-    button:hover{filter:brightness(1.08)}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .muted{color:#93a4bb}
-    a{color:#8bd3ff;text-decoration:none}
-    ul{margin:8px 0 0 18px}
-    .pill{display:inline-block;padding:6px 10px;border:1px solid #27384f;border-radius:999px;color:#b9c7dc;margin-right:8px}
-    .list{max-height:280px;overflow:auto}
-    .small{font-size:12px}
+    body{font-family:system-ui;max-width:920px;margin:0 auto;padding:20px;background:#0b1220;color:#e7eefc}
+    .card{background:#111b33;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px}
+    a{color:#a9c7ff;text-decoration:none}
   </style>
-  <script src="/monetag.js">
-/* STATIC_MODE */
-function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
-function money(n){ return Math.round((Number(n||0))*100)/100; }
-function fmtMoney(n){ return "R$ " + (Number(n||0)).toFixed(2).replace(".", ","); }
-
-function simulateLocal(data){
-  const capital = clamp(Number(data.capital ?? 10), 0, 100000);
-  const horasDia = clamp(Number(data.horasDia ?? 2), 0, 16);
-  const diasMes = clamp(Number(data.diasMes ?? 26), 1, 31);
-  const perfil = (data.perfil || "normal").toLowerCase();
-  const caminho = (data.caminho || "servico").toLowerCase();
-
-  const riskMult = perfil === "conservador" ? 0.75 : perfil === "agressivo" ? 1.25 : 1.0;
-
-  const baseByPath = {
-    servico: { min: 8, max: 25 },
-    afiliado: { min: 2, max: 15 },
-    conteudo: { min: 1, max: 12 },
-    revenda: { min: 4, max: 20 },
-  };
-  const p = baseByPath[caminho] || baseByPath.servico;
-  const capitalBoost = clamp(1 + (Math.log10(capital + 1) / 10), 1, 1.35);
-
-  const mensalLow = (p.min * riskMult) * horasDia * diasMes * capitalBoost;
-  const mensalHigh = (p.max * riskMult) * horasDia * diasMes * capitalBoost;
-
-  return {
-    ok: true,
-    estimate: { low: money(mensalLow), high: money(mensalHigh) },
-    tips: [
-      "Começo: foque em 1 canal (site/SEO ou um serviço único).",
-      "Reinvista 20% do que entrar em conteúdo e páginas.",
-      "Repita diariamente: publicar + interlinkar + melhorar títulos."
-    ]
-  };
-}
-
-function ideasLocal(){
-  return {
-    ok:true,
-    hint:"Publique mais páginas long tail (perguntas específicas) e interligue por categorias.",
-    ideas:[
-      { title:"Renda extra em casa (SEO)", why:"Alta busca no Google.", steps:["Gerar 50 páginas","Criar FAQs","Linkar entre si"], monetization:["Monetag","Afiliados"]},
-      { title:"Renda extra com celular", why:"Muitas dúvidas específicas.", steps:["Gerar 50 páginas","Melhorar titles","Publicar todo dia"], monetization:["Monetag","Afiliados"]},
-      { title:"Ideias de negócio baratas", why:"Long tail converte bem.", steps:["Gerar 50 páginas","Criar categorias","Atualizar sitemap"], monetization:["Monetag","E-book simples"]}
-    ]
-  };
-}
-
-// Override das funções do site (sem /api)
-async function runSim(){
-  const data = {
-    capital: Number(document.getElementById("capital").value),
-    horasDia: Number(document.getElementById("horasDia").value),
-    diasMes: Number(document.getElementById("diasMes").value),
-    perfil: document.getElementById("perfil").value,
-    caminho: document.getElementById("caminho").value,
-  };
-  const out = simulateLocal(data);
-  const el = document.getElementById("out");
-  el.innerHTML = `
-    <div><b>Estimativa mensal</b> (offline)</div>
-    <div style="margin-top:6px"><b>${fmtMoney(out.estimate.low)}</b> até <b>${fmtMoney(out.estimate.high)}</b></div>
-    <div class="muted small" style="margin-top:6px">Estimativa educativa (não garantia).</div>
-    <div style="margin-top:10px"><b>Dicas</b></div>
-    <ul>${out.tips.map(t=>`<li>${t}</li>`).join("")}</ul>
-  `;
-}
-
-async function runIdeas(){
-  const out = ideasLocal();
-  const el = document.getElementById("out");
-  el.innerHTML = `
-    <div><b>Ideias sugeridas</b> (offline)</div>
-    <div class="muted small" style="margin-top:4px">${out.hint}</div>
-    <div style="margin-top:10px">
-      ${out.ideas.map(i => `
-        <div class="card" style="background:#0b1220;border-color:#22324a">
-          <div><b>${i.title}</b></div>
-          <div class="muted small" style="margin-top:4px">${i.why}</div>
-          <div style="margin-top:8px" class="small"><b>Passos</b><ul>${i.steps.map(s=>`<li>${s}</li>`).join("")}</ul></div>
-          <div style="margin-top:8px" class="small"><b>Monetização</b><ul>${i.monetization.map(m=>`<li>${m}</li>`).join("")}</ul></div>
-        </div>
-      `).join("")}
-    </div>
-  `;
-}
-
-// Pages list (Netlify): lê generated_index.json
-async function loadPages(){
-  try{
-    const r = await fetch("/generated_index.json");
-    const db = await r.json();
-    const el = document.getElementById("pages");
-    if(!db.pages || !db.pages.length){
-      el.innerHTML = "<div class='muted small'>Ainda sem páginas exportadas.</div>";
-      return;
-    }
-    el.innerHTML = db.pages.slice(0,30).map(p => `
-      <div style="padding:10px;border-bottom:1px solid #1f2c41">
-        <div class="small"><a href="/generated/${p.file}" target="_blank">${p.title}</a></div>
-        <div class="muted small">${p.key || p.dayKey || ""}</div>
-      </div>
-    `).join("");
-  }catch(e){
-    document.getElementById("pages").innerHTML = "<div class='muted small'>Sem índice ainda.</div>";
-  }
-}
-
-// Stats: desliga (não existe backend)
-async function loadStats(){
-  const el = document.getElementById("stats");
-  if (el) el.innerHTML = "Modo estático (sem backend).";
-}
-
-(async function init(){
-  await loadStats();
-  await loadPages();
-})();
-</script>
-</head>
-<body>
-  <div class="wrap">
-    <div class="card">
-      <div class="muted">🤖 Robô 24h (legal)</div>
-      <h1>RendaBot 24h</h1>
-      <div class="muted">Simulador educativo + Gerador de Ideias. O robô cria páginas SEO automaticamente.</div>
-      <div style="margin-top:10px">
-        <span class="pill">3 páginas/dia</span>
-        <span class="pill">Bulk 30</span>
-        <span class="pill">Sitemap + Robots</span>
-      </div>
-    </div>
-
-    <div class="grid" style="margin-top:14px">
-      <div class="card">
-        <h2>📊 Simulador de renda extra</h2>
-        <div class="row">
-          <div>
-            <label>Capital (R$)</label>
-            <input id="capital" type="number" value="10" min="0"/>
-          </div>
-          <div>
-            <label>Horas por dia</label>
-            <input id="horasDia" type="number" value="2" min="0" max="16"/>
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Dias no mês</label>
-            <input id="diasMes" type="number" value="26" min="1" max="31"/>
-          </div>
-          <div>
-            <label>Perfil</label>
-            <select id="perfil">
-              <option value="conservador">Conservador</option>
-              <option value="normal" selected>Normal</option>
-              <option value="agressivo">Agressivo</option>
-            </select>
-          </div>
-        </div>
-
-        <label>Caminho</label>
-        <select id="caminho">
-          <option value="servico" selected>Serviço digital (mais rápido)</option>
-          <option value="afiliado">Afiliados (escala)</option>
-          <option value="conteudo">Conteúdo/SEO (longo prazo)</option>
-          <option value="revenda">Revenda (variável)</option>
-        </select>
-
-        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-          <button onclick="runSim()">Simular</button>
-          <button onclick="runIdeas()">Gerar ideias</button>
-        </div>
-
-        <div id="out" class="card" style="margin-top:12px;background:#0f1722;border-color:#22324a">
-          <div class="muted small">Resultados aparecem aqui.</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>🧠 Páginas SEO geradas</h2>
-        <div class="muted small">Veja em <b>/generated</b> e indexe com <b>/sitemap.xml</b>.</div>
-        <div id="pages" class="list" style="margin-top:10px"></div>
-
-        <div style="margin-top:14px">
-          <h2>📈 Estatísticas</h2>
-          <div id="stats" class="muted small">Carregando...</div>
-        </div>
-
-        <div style="margin-top:14px" class="muted small">
-          Monetização: depois cole scripts do AdSense/Monetag + links afiliados.
-        </div>
-      </div>
-    </div>
+</head><body>
+  <div class="card">
+    <h1>RendaBot 24h</h1>
+    <p>Foram geradas 10000 páginas. Abaixo, um atalho para as primeiras.</p>
+    <ul><li><a href="/gerado/renda-1.html">Ideia 1: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-2.html">Ideia 2: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-3.html">Ideia 3: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-4.html">Ideia 4: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-5.html">Ideia 5: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-6.html">Ideia 6: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-7.html">Ideia 7: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-8.html">Ideia 8: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-9.html">Ideia 9: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-10.html">Ideia 10: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-11.html">Ideia 11: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-12.html">Ideia 12: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-13.html">Ideia 13: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-14.html">Ideia 14: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-15.html">Ideia 15: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-16.html">Ideia 16: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-17.html">Ideia 17: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-18.html">Ideia 18: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-19.html">Ideia 19: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-20.html">Ideia 20: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-21.html">Ideia 21: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-22.html">Ideia 22: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-23.html">Ideia 23: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-24.html">Ideia 24: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-25.html">Ideia 25: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-26.html">Ideia 26: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-27.html">Ideia 27: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-28.html">Ideia 28: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-29.html">Ideia 29: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-30.html">Ideia 30: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-31.html">Ideia 31: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-32.html">Ideia 32: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-33.html">Ideia 33: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-34.html">Ideia 34: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-35.html">Ideia 35: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-36.html">Ideia 36: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-37.html">Ideia 37: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-38.html">Ideia 38: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-39.html">Ideia 39: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-40.html">Ideia 40: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-41.html">Ideia 41: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-42.html">Ideia 42: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-43.html">Ideia 43: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-44.html">Ideia 44: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-45.html">Ideia 45: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-46.html">Ideia 46: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-47.html">Ideia 47: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-48.html">Ideia 48: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-49.html">Ideia 49: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-50.html">Ideia 50: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-51.html">Ideia 51: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-52.html">Ideia 52: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-53.html">Ideia 53: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-54.html">Ideia 54: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-55.html">Ideia 55: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-56.html">Ideia 56: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-57.html">Ideia 57: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-58.html">Ideia 58: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-59.html">Ideia 59: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-60.html">Ideia 60: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-61.html">Ideia 61: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-62.html">Ideia 62: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-63.html">Ideia 63: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-64.html">Ideia 64: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-65.html">Ideia 65: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-66.html">Ideia 66: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-67.html">Ideia 67: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-68.html">Ideia 68: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-69.html">Ideia 69: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-70.html">Ideia 70: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-71.html">Ideia 71: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-72.html">Ideia 72: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-73.html">Ideia 73: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-74.html">Ideia 74: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-75.html">Ideia 75: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-76.html">Ideia 76: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-77.html">Ideia 77: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-78.html">Ideia 78: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-79.html">Ideia 79: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-80.html">Ideia 80: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-81.html">Ideia 81: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-82.html">Ideia 82: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-83.html">Ideia 83: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-84.html">Ideia 84: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-85.html">Ideia 85: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-86.html">Ideia 86: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-87.html">Ideia 87: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-88.html">Ideia 88: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-89.html">Ideia 89: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-90.html">Ideia 90: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-91.html">Ideia 91: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-92.html">Ideia 92: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-93.html">Ideia 93: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-94.html">Ideia 94: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-95.html">Ideia 95: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-96.html">Ideia 96: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-97.html">Ideia 97: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-98.html">Ideia 98: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-99.html">Ideia 99: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-100.html">Ideia 100: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-101.html">Ideia 101: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-102.html">Ideia 102: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-103.html">Ideia 103: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-104.html">Ideia 104: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-105.html">Ideia 105: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-106.html">Ideia 106: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-107.html">Ideia 107: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-108.html">Ideia 108: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-109.html">Ideia 109: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-110.html">Ideia 110: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-111.html">Ideia 111: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-112.html">Ideia 112: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-113.html">Ideia 113: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-114.html">Ideia 114: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-115.html">Ideia 115: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-116.html">Ideia 116: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-117.html">Ideia 117: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-118.html">Ideia 118: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-119.html">Ideia 119: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-120.html">Ideia 120: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-121.html">Ideia 121: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-122.html">Ideia 122: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-123.html">Ideia 123: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-124.html">Ideia 124: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-125.html">Ideia 125: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-126.html">Ideia 126: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-127.html">Ideia 127: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-128.html">Ideia 128: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-129.html">Ideia 129: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-130.html">Ideia 130: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-131.html">Ideia 131: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-132.html">Ideia 132: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-133.html">Ideia 133: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-134.html">Ideia 134: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-135.html">Ideia 135: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-136.html">Ideia 136: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-137.html">Ideia 137: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-138.html">Ideia 138: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-139.html">Ideia 139: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-140.html">Ideia 140: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-141.html">Ideia 141: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-142.html">Ideia 142: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-143.html">Ideia 143: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-144.html">Ideia 144: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-145.html">Ideia 145: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-146.html">Ideia 146: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-147.html">Ideia 147: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-148.html">Ideia 148: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-149.html">Ideia 149: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-150.html">Ideia 150: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-151.html">Ideia 151: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-152.html">Ideia 152: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-153.html">Ideia 153: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-154.html">Ideia 154: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-155.html">Ideia 155: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-156.html">Ideia 156: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-157.html">Ideia 157: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-158.html">Ideia 158: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-159.html">Ideia 159: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-160.html">Ideia 160: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-161.html">Ideia 161: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-162.html">Ideia 162: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-163.html">Ideia 163: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-164.html">Ideia 164: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-165.html">Ideia 165: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-166.html">Ideia 166: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-167.html">Ideia 167: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-168.html">Ideia 168: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-169.html">Ideia 169: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-170.html">Ideia 170: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-171.html">Ideia 171: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-172.html">Ideia 172: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-173.html">Ideia 173: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-174.html">Ideia 174: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-175.html">Ideia 175: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-176.html">Ideia 176: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-177.html">Ideia 177: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-178.html">Ideia 178: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-179.html">Ideia 179: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-180.html">Ideia 180: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-181.html">Ideia 181: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-182.html">Ideia 182: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-183.html">Ideia 183: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-184.html">Ideia 184: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-185.html">Ideia 185: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-186.html">Ideia 186: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-187.html">Ideia 187: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-188.html">Ideia 188: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-189.html">Ideia 189: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-190.html">Ideia 190: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-191.html">Ideia 191: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-192.html">Ideia 192: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-193.html">Ideia 193: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-194.html">Ideia 194: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-195.html">Ideia 195: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-196.html">Ideia 196: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-197.html">Ideia 197: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-198.html">Ideia 198: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-199.html">Ideia 199: Renda extra online (guia rápido 2026)</a></li>
+<li><a href="/gerado/renda-200.html">Ideia 200: Renda extra online (guia rápido 2026)</a></li>
+</ul>
+    <p><a href="/gerado/renda-1.html">Abrir página 1</a> •
+       <a href="/sitemap.xml">Sitemap</a> •
+       <a href="/robots.txt">Robots</a></p>
   </div>
-
-<script>
-async function post(url, data){
-  const r = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(data || {})});
-  return r.json();
-}
-function fmtMoney(n){ return "R$ " + (Number(n||0)).toFixed(2).replace(".", ","); }
-
-async function runSim(){
-  const data = {
-    capital: Number(document.getElementById("capital").value),
-    horasDia: Number(document.getElementById("horasDia").value),
-    diasMes: Number(document.getElementById("diasMes").value),
-    perfil: document.getElementById("perfil").value,
-    caminho: document.getElementById("caminho").value,
-  };
-  const out = await post("/api/simulate", data);
-  renderSim(out);
-  await post("/api/hit", {});
-  await loadStats();
-}
-
-async function runIdeas(){
-  const data = {
-    capital: Number(document.getElementById("capital").value),
-    cidadePequena: false,
-    tempo: "medio",
-    habilidade: "apps"
-  };
-  const out = await post("/api/ideas", data);
-  renderIdeas(out);
-  await post("/api/hit", {});
-  await loadStats();
-}
-
-function renderSim(out){
-  const el = document.getElementById("out");
-  if(!out.ok){ el.innerHTML = "<div>Erro.</div>"; return; }
-  el.innerHTML = `
-    <div><b>Estimativa mensal</b> (educativa)</div>
-    <div style="margin-top:6px"><b>${fmtMoney(out.estimate.low)}</b> até <b>${fmtMoney(out.estimate.high)}</b></div>
-    <div class="muted small" style="margin-top:6px">${out.estimate.note}</div>
-    <div style="margin-top:10px"><b>Dicas</b></div>
-    <ul>${out.tips.map(t=>`<li>${t}</li>`).join("")}</ul>
-  `;
-}
-
-function renderIdeas(out){
-  const el = document.getElementById("out");
-  if(!out.ok){ el.innerHTML = "<div>Erro.</div>"; return; }
-  el.innerHTML = `
-    <div><b>Ideias sugeridas</b></div>
-    <div class="muted small" style="margin-top:4px">${out.hint}</div>
-    <div style="margin-top:10px">
-      ${out.ideas.map(i => `
-        <div class="card" style="background:#0b1220;border-color:#22324a">
-          <div><b>${i.title}</b></div>
-          <div class="muted small" style="margin-top:4px">${i.why}</div>
-          <div style="margin-top:8px" class="small"><b>Passos</b><ul>${i.steps.map(s=>`<li>${s}</li>`).join("")}</ul></div>
-          <div style="margin-top:8px" class="small"><b>Monetização</b><ul>${i.monetization.map(m=>`<li>${m}</li>`).join("")}</ul></div>
-        </div>
-      `).join("")}
-    </div>
-  `;
-}
-
-async function loadPages(){
-  try{
-    const r = await fetch("/generated_index.json");
-    const db = await r.json();
-    const el = document.getElementById("pages");
-    if(!db.pages || !db.pages.length){
-      el.innerHTML = "<div class='muted small'>Sem páginas ainda. Use o bulk (30) pelo endpoint admin.</div>";
-      return;
-    }
-    el.innerHTML = db.pages.slice(0,20).map(p => `
-      <div style="padding:10px;border-bottom:1px solid #1f2c41">
-        <div class="small"><a href="/generated/${p.file}" target="_blank">${p.title}</a></div>
-        <div class="muted small">${p.niche || ""} • ${p.mode || ""}</div>
-      </div>
-    `).join("");
-  }catch(e){
-    document.getElementById("pages").innerHTML = "<div class='muted small'>Sem índice ainda.</div>";
-  }
-}
-
-async function loadStats(){
-  const s = await fetch("/api/stats").then(r=>r.json());
-  const keys = Object.keys(s.byDay || {}).sort().slice(-5);
-  const last = keys.map(k => `${k}: ${s.byDay[k]}`).join(" | ");
-  document.getElementById("stats").innerHTML = `Total hits: <b>${s.hits||0}</b><br/><span class="muted">${last || ""}</span>`;
-}
-
-(async function init(){
-  await post("/api/hit", {});
-  await loadStats();
-  await loadPages();
-})();
-</script>
-</body>
-</html>
+</body></html>
