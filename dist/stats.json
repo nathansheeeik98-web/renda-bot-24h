@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "total": 1500,
+    "updatedAt": "2026-02-19T03:23:48.669Z"
+  },
+  "days": [
+    {
+      "date": "2026-02-19",
+      "generated": 500,
+      "total": 1500,
+      "durationSec": 1,
+      "pushOk": false
+    }
+  ]
+}
