@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: renda-bot-24h
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: BASE_URL
+        value: ""

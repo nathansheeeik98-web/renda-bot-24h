@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>RendaBot 24h - Simulador + Ideias</title>
+  <meta name="description" content="Simulador educativo de renda extra + gerador de ideias. Robô gera páginas SEO automaticamente todo dia."/>
+  <style>
+    body{font-family:system-ui,Arial;margin:0;background:#0b0f14;color:#e9eef5;}
+    .wrap{max-width:980px;margin:0 auto;padding:22px;}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:900px){.grid{grid-template-columns:1.2fr .8fr}}
+    .card{background:#121a24;border:1px solid #1e2a3a;border-radius:16px;padding:16px}
+    h1{margin:0 0 8px;font-size:26px}
+    h2{margin:0 0 10px;font-size:18px}
+    label{display:block;font-size:13px;color:#b8c6da;margin:10px 0 6px}
+    input,select{width:100%;padding:10px;border-radius:12px;border:1px solid #263449;background:#0f1722;color:#e9eef5}
+    button{padding:10px 14px;border-radius:12px;border:1px solid #2a3a52;background:#162233;color:#e9eef5;cursor:pointer}
+    button:hover{filter:brightness(1.08)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .muted{color:#93a4bb}
+    a{color:#8bd3ff;text-decoration:none}
+    ul{margin:8px 0 0 18px}
+    .pill{display:inline-block;padding:6px 10px;border:1px solid #27384f;border-radius:999px;color:#b9c7dc;margin-right:8px}
+    .list{max-height:280px;overflow:auto}
+    .small{font-size:12px}
+  </style>
+  <script src="/monetag.js">
+/* STATIC_MODE */
+function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
+function money(n){ return Math.round((Number(n||0))*100)/100; }
+function fmtMoney(n){ return "R$ " + (Number(n||0)).toFixed(2).replace(".", ","); }
+
+function simulateLocal(data){
+  const capital = clamp(Number(data.capital ?? 10), 0, 100000);
+  const horasDia = clamp(Number(data.horasDia ?? 2), 0, 16);
+  const diasMes = clamp(Number(data.diasMes ?? 26), 1, 31);
+  const perfil = (data.perfil || "normal").toLowerCase();
+  const caminho = (data.caminho || "servico").toLowerCase();
+
+  const riskMult = perfil === "conservador" ? 0.75 : perfil === "agressivo" ? 1.25 : 1.0;
+
+  const baseByPath = {
+    servico: { min: 8, max: 25 },
+    afiliado: { min: 2, max: 15 },
+    conteudo: { min: 1, max: 12 },
+    revenda: { min: 4, max: 20 },
+  };
+  const p = baseByPath[caminho] || baseByPath.servico;
+  const capitalBoost = clamp(1 + (Math.log10(capital + 1) / 10), 1, 1.35);
+
+  const mensalLow = (p.min * riskMult) * horasDia * diasMes * capitalBoost;
+  const mensalHigh = (p.max * riskMult) * horasDia * diasMes * capitalBoost;
+
+  return {
+    ok: true,
+    estimate: { low: money(mensalLow), high: money(mensalHigh) },
+    tips: [
+      "Começo: foque em 1 canal (site/SEO ou um serviço único).",
+      "Reinvista 20% do que entrar em conteúdo e páginas.",
+      "Repita diariamente: publicar + interlinkar + melhorar títulos."
+    ]
+  };
+}
+
+function ideasLocal(){
+  return {
+    ok:true,
+    hint:"Publique mais páginas long tail (perguntas específicas) e interligue por categorias.",
+    ideas:[
+      { title:"Renda extra em casa (SEO)", why:"Alta busca no Google.", steps:["Gerar 50 páginas","Criar FAQs","Linkar entre si"], monetization:["Monetag","Afiliados"]},
+      { title:"Renda extra com celular", why:"Muitas dúvidas específicas.", steps:["Gerar 50 páginas","Melhorar titles","Publicar todo dia"], monetization:["Monetag","Afiliados"]},
+      { title:"Ideias de negócio baratas", why:"Long tail converte bem.", steps:["Gerar 50 páginas","Criar categorias","Atualizar sitemap"], monetization:["Monetag","E-book simples"]}
+    ]
+  };
+}
+
+// Override das funções do site (sem /api)
+async function runSim(){
+  const data = {
+    capital: Number(document.getElementById("capital").value),
+    horasDia: Number(document.getElementById("horasDia").value),
+    diasMes: Number(document.getElementById("diasMes").value),
+    perfil: document.getElementById("perfil").value,
+    caminho: document.getElementById("caminho").value,
+  };
+  const out = simulateLocal(data);
+  const el = document.getElementById("out");
+  el.innerHTML = `
+    <div><b>Estimativa mensal</b> (offline)</div>
+    <div style="margin-top:6px"><b>${fmtMoney(out.estimate.low)}</b> até <b>${fmtMoney(out.estimate.high)}</b></div>
+    <div class="muted small" style="margin-top:6px">Estimativa educativa (não garantia).</div>
+    <div style="margin-top:10px"><b>Dicas</b></div>
+    <ul>${out.tips.map(t=>`<li>${t}</li>`).join("")}</ul>
+  `;
+}
+
+async function runIdeas(){
+  const out = ideasLocal();
+  const el = document.getElementById("out");
+  el.innerHTML = `
+    <div><b>Ideias sugeridas</b> (offline)</div>
+    <div class="muted small" style="margin-top:4px">${out.hint}</div>
+    <div style="margin-top:10px">
+      ${out.ideas.map(i => `
+        <div class="card" style="background:#0b1220;border-color:#22324a">
+          <div><b>${i.title}</b></div>
+          <div class="muted small" style="margin-top:4px">${i.why}</div>
+          <div style="margin-top:8px" class="small"><b>Passos</b><ul>${i.steps.map(s=>`<li>${s}</li>`).join("")}</ul></div>
+          <div style="margin-top:8px" class="small"><b>Monetização</b><ul>${i.monetization.map(m=>`<li>${m}</li>`).join("")}</ul></div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+// Pages list (Netlify): lê generated_index.json
+async function loadPages(){
+  try{
+    const r = await fetch("/generated_index.json");
+    const db = await r.json();
+    const el = document.getElementById("pages");
+    if(!db.pages || !db.pages.length){
+      el.innerHTML = "<div class='muted small'>Ainda sem páginas exportadas.</div>";
+      return;
+    }
+    el.innerHTML = db.pages.slice(0,30).map(p => `
+      <div style="padding:10px;border-bottom:1px solid #1f2c41">
+        <div class="small"><a href="/generated/${p.file}" target="_blank">${p.title}</a></div>
+        <div class="muted small">${p.key || p.dayKey || ""}</div>
+      </div>
+    `).join("");
+  }catch(e){
+    document.getElementById("pages").innerHTML = "<div class='muted small'>Sem índice ainda.</div>";
+  }
+}
+
+// Stats: desliga (não existe backend)
+async function loadStats(){
+  const el = document.getElementById("stats");
+  if (el) el.innerHTML = "Modo estático (sem backend).";
+}
+
+(async function init(){
+  await loadStats();
+  await loadPages();
+})();
+</script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="muted">🤖 Robô 24h (legal)</div>
+      <h1>RendaBot 24h</h1>
+      <div class="muted">Simulador educativo + Gerador de Ideias. O robô cria páginas SEO automaticamente.</div>
+      <div style="margin-top:10px">
+        <span class="pill">3 páginas/dia</span>
+        <span class="pill">Bulk 30</span>
+        <span class="pill">Sitemap + Robots</span>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:14px">
+      <div class="card">
+        <h2>📊 Simulador de renda extra</h2>
+        <div class="row">
+          <div>
+            <label>Capital (R$)</label>
+            <input id="capital" type="number" value="10" min="0"/>
+          </div>
+          <div>
+            <label>Horas por dia</label>
+            <input id="horasDia" type="number" value="2" min="0" max="16"/>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Dias no mês</label>
+            <input id="diasMes" type="number" value="26" min="1" max="31"/>
+          </div>
+          <div>
+            <label>Perfil</label>
+            <select id="perfil">
+              <option value="conservador">Conservador</option>
+              <option value="normal" selected>Normal</option>
+              <option value="agressivo">Agressivo</option>
+            </select>
+          </div>
+        </div>
+
+        <label>Caminho</label>
+        <select id="caminho">
+          <option value="servico" selected>Serviço digital (mais rápido)</option>
+          <option value="afiliado">Afiliados (escala)</option>
+          <option value="conteudo">Conteúdo/SEO (longo prazo)</option>
+          <option value="revenda">Revenda (variável)</option>
+        </select>
+
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+          <button onclick="runSim()">Simular</button>
+          <button onclick="runIdeas()">Gerar ideias</button>
+        </div>
+
+        <div id="out" class="card" style="margin-top:12px;background:#0f1722;border-color:#22324a">
+          <div class="muted small">Resultados aparecem aqui.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🧠 Páginas SEO geradas</h2>
+        <div class="muted small">Veja em <b>/generated</b> e indexe com <b>/sitemap.xml</b>.</div>
+        <div id="pages" class="list" style="margin-top:10px"></div>
+
+        <div style="margin-top:14px">
+          <h2>📈 Estatísticas</h2>
+          <div id="stats" class="muted small">Carregando...</div>
+        </div>
+
+        <div style="margin-top:14px" class="muted small">
+          Monetização: depois cole scripts do AdSense/Monetag + links afiliados.
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+async function post(url, data){
+  const r = await fetch(url, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(data || {})});
+  return r.json();
+}
+function fmtMoney(n){ return "R$ " + (Number(n||0)).toFixed(2).replace(".", ","); }
+
+async function runSim(){
+  const data = {
+    capital: Number(document.getElementById("capital").value),
+    horasDia: Number(document.getElementById("horasDia").value),
+    diasMes: Number(document.getElementById("diasMes").value),
+    perfil: document.getElementById("perfil").value,
+    caminho: document.getElementById("caminho").value,
+  };
+  const out = await post("/api/simulate", data);
+  renderSim(out);
+  await post("/api/hit", {});
+  await loadStats();
+}
+
+async function runIdeas(){
+  const data = {
+    capital: Number(document.getElementById("capital").value),
+    cidadePequena: false,
+    tempo: "medio",
+    habilidade: "apps"
+  };
+  const out = await post("/api/ideas", data);
+  renderIdeas(out);
+  await post("/api/hit", {});
+  await loadStats();
+}
+
+function renderSim(out){
+  const el = document.getElementById("out");
+  if(!out.ok){ el.innerHTML = "<div>Erro.</div>"; return; }
+  el.innerHTML = `
+    <div><b>Estimativa mensal</b> (educativa)</div>
+    <div style="margin-top:6px"><b>${fmtMoney(out.estimate.low)}</b> até <b>${fmtMoney(out.estimate.high)}</b></div>
+    <div class="muted small" style="margin-top:6px">${out.estimate.note}</div>
+    <div style="margin-top:10px"><b>Dicas</b></div>
+    <ul>${out.tips.map(t=>`<li>${t}</li>`).join("")}</ul>
+  `;
+}
+
+function renderIdeas(out){
+  const el = document.getElementById("out");
+  if(!out.ok){ el.innerHTML = "<div>Erro.</div>"; return; }
+  el.innerHTML = `
+    <div><b>Ideias sugeridas</b></div>
+    <div class="muted small" style="margin-top:4px">${out.hint}</div>
+    <div style="margin-top:10px">
+      ${out.ideas.map(i => `
+        <div class="card" style="background:#0b1220;border-color:#22324a">
+          <div><b>${i.title}</b></div>
+          <div class="muted small" style="margin-top:4px">${i.why}</div>
+          <div style="margin-top:8px" class="small"><b>Passos</b><ul>${i.steps.map(s=>`<li>${s}</li>`).join("")}</ul></div>
+          <div style="margin-top:8px" class="small"><b>Monetização</b><ul>${i.monetization.map(m=>`<li>${m}</li>`).join("")}</ul></div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+async function loadPages(){
+  try{
+    const r = await fetch("/generated_index.json");
+    const db = await r.json();
+    const el = document.getElementById("pages");
+    if(!db.pages || !db.pages.length){
+      el.innerHTML = "<div class='muted small'>Sem páginas ainda. Use o bulk (30) pelo endpoint admin.</div>";
+      return;
+    }
+    el.innerHTML = db.pages.slice(0,20).map(p => `
+      <div style="padding:10px;border-bottom:1px solid #1f2c41">
+        <div class="small"><a href="/generated/${p.file}" target="_blank">${p.title}</a></div>
+        <div class="muted small">${p.niche || ""} • ${p.mode || ""}</div>
+      </div>
+    `).join("");
+  }catch(e){
+    document.getElementById("pages").innerHTML = "<div class='muted small'>Sem índice ainda.</div>";
+  }
+}
+
+async function loadStats(){
+  const s = await fetch("/api/stats").then(r=>r.json());
+  const keys = Object.keys(s.byDay || {}).sort().slice(-5);
+  const last = keys.map(k => `${k}: ${s.byDay[k]}`).join(" | ");
+  document.getElementById("stats").innerHTML = `Total hits: <b>${s.hits||0}</b><br/><span class="muted">${last || ""}</span>`;
+}
+
+(async function init(){
+  await post("/api/hit", {});
+  await loadStats();
+  await loadPages();
+})();
+</script>
+</body>
+</html>

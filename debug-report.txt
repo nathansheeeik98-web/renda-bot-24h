@@ -1,0 +1,106 @@
+
+====================
+INFO
+====================
+Data: Wed Feb 18 21:38:12 -03 2026
+PWD:  /data/data/com.termux/files/home/renda-bot-24h/renda-bot-24h
+Node: v25.3.0
+NPM:  11.10.0
+
+====================
+DIST CHECK
+====================
+Arquivos na raiz do dist:
+total 52
+drwx------. 3 u0_a231 u0_a231  4096 Feb 18 21:33 .
+drwx------. 9 u0_a231 u0_a231  4096 Feb 18 21:38 ..
+drwx------. 2 u0_a231 u0_a231  4096 Feb 18 21:26 generated
+-rw-------. 1 u0_a231 u0_a231  8960 Feb 18 21:26 generated_index.json
+-rw-------. 1 u0_a231 u0_a231 12780 Feb 18 21:33 index.html
+-rw-------. 1 u0_a231 u0_a231   117 Feb 18 21:26 monetag.js
+-rw-------. 1 u0_a231 u0_a231    46 Feb 18 21:26 robots.txt
+-rw-------. 1 u0_a231 u0_a231  3025 Feb 18 21:26 sitemap.xml
+✅ dist/index.html existe (size: 12780 bytes)
+
+====================
+GENERATED CHECK
+====================
+✅ dist/generated existe. Total arquivos: 60
+Amostra:
+total 248
+drwx------. 2 u0_a231 u0_a231 4096 Feb 18 21:26 .
+drwx------. 3 u0_a231 u0_a231 4096 Feb 18 21:33 ..
+-rw-------. 1 u0_a231 u0_a231 1125 Feb 18 21:26 como-criar-um-site-simples-que-gera-renda-2026-02-18-03.html
+-rw-------. 1 u0_a231 u0_a231 1125 Feb 18 21:26 como-criar-um-site-simples-que-gera-renda-2026-02-18-05.html
+-rw-------. 1 u0_a231 u0_a231 1125 Feb 18 21:26 como-criar-um-site-simples-que-gera-renda-2026-02-18-06.html
+-rw-------. 1 u0_a231 u0_a231 1125 Feb 18 21:26 como-criar-um-site-simples-que-gera-renda-2026-02-18-12.html
+-rw-------. 1 u0_a231 u0_a231 1125 Feb 18 21:26 como-criar-um-site-simples-que-gera-renda-2026-02-18-14.html
+-rw-------. 1 u0_a231 u0_a231 1125 Feb 18 21:26 como-criar-um-site-simples-que-gera-renda-2026-02-18-19.html
+-rw-------. 1 u0_a231 u0_a231 1125 Feb 18 21:26 como-criar-um-site-simples-que-gera-renda-2026-02-18-26.html
+-rw-------. 1 u0_a231 u0_a231 1125 Feb 18 21:26 como-fazer-renda-extra-comecando-do-zero-2026-02-18-04.html
+-rw-------. 1 u0_a231 u0_a231 1125 Feb 18 21:26 como-fazer-renda-extra-comecando-do-zero-2026-02-18-21.html
+-rw-------. 1 u0_a231 u0_a231 1137 Feb 18 21:26 como-ganhar-dinheiro-com-micro-servicos-online-2026-02-18-25.html
+-rw-------. 1 u0_a231 u0_a231 1137 Feb 18 21:26 como-ganhar-dinheiro-com-micro-servicos-online-2026-02-18-28.html
+-rw-------. 1 u0_a231 u0_a231 1137 Feb 18 21:26 como-ganhar-dinheiro-com-micro-servicos-online-2026-02-18-29.html
+
+====================
+INDEX JSON / SITEMAP / ROBOTS
+====================
+✅ generated_index.json existe (size: 8960 bytes)
+✅ sitemap.xml existe (size: 3025 bytes)
+✅ robots.txt existe (size: 46 bytes)
+
+====================
+HTML: SCRIPTS E LINKS IMPORTANTES
+====================
+Linhas com <script> / monetag:
+28:  <!-- <script src="/monetag.js">
+227:<script>
+
+Procurando referências a assets externos (src/href):
+/monetag.js
+/generated/${p.file}
+/generated/${p.file}
+
+====================
+MONETAG CHECK
+====================
+ℹ️ index.html carrega /monetag.js
+✅ dist/monetag.js existe (size: 117 bytes)
+Primeiras linhas:
+// COLE AQUI o script do Monetag (do seu painel).
+// Exemplo (não use esse, pegue o seu):
+// (function(){ ... })();
+
+====================
+MONETAG SYNTAX (node --check)
+====================
+✅ node --check: sem erro de sintaxe aparente
+
+====================
+FUNÇÕES NO JS INLINE (Simular/Ideias)
+====================
+✅ Encontrou function runSim() no index.html
+✅ Encontrou function runIdeas() no index.html
+
+====================
+PWA / SERVICE WORKER (CACHE)
+====================
+✅ Não achei sw/manifest óbvios (menos chance de cache PWA).
+
+====================
+TESTE LOCAL (SERVIR E BAIXAR COM CURL)
+====================
+Testando GET /
+Testando GET /generated_index.json
+Testando GET /sitemap.xml
+
+✅ Teste local concluído.
+
+====================
+CONCLUSÃO (DICAS AUTOMÁTICAS)
+====================
+- Se o site abre mas botões não respondem: 80% das vezes é monetag.js com erro ou cache.
+- Teste rápido: remover monetag do index e redeploy. Se funcionar, monetag era a causa.
+- Se /generated/* dá 404: dist/generated não foi enviado no deploy.
+- Se /generated_index.json não abre no site: deploy incompleto ou zip com raiz errada.
