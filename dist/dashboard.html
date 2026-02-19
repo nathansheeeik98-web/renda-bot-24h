@@ -4,95 +4,67 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Dashboard - RendaBot 24h</title>
-  <meta name="description" content="Dashboard de crescimento diário do RendaBot 24h."/>
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#0b1220;color:#e7eefc}
+    body{font-family:system-ui;margin:0;background:#0b1220;color:#e7eefc}
     .wrap{max-width:980px;margin:0 auto;padding:18px}
     .card{background:#111b33;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin:12px 0}
-    h1{margin:6px 0 0;font-size:22px}
-    .muted{opacity:.75}
-    .row{display:grid;grid-template-columns:1fr;gap:12px}
-    @media(min-width:900px){.row{grid-template-columns:1fr 1fr}}
-    .kpi{display:flex;gap:10px;flex-wrap:wrap}
-    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;background:rgba(255,255,255,.08)}
     a{color:#a9c7ff;text-decoration:none}
     a:hover{text-decoration:underline}
     table{width:100%;border-collapse:collapse}
     th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:14px}
     .ok{color:#7CFFB2} .bad{color:#FF8B8B}
-    .small{font-size:12px}
-    input,select{padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#0b1220;color:#e7eefc}
-    .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .svgWrap{width:100%;overflow:hidden}
+    .muted{opacity:.75}
     svg{width:100%;height:260px;display:block}
     .gridline{stroke:rgba(255,255,255,.08);stroke-width:1}
     .line{fill:none;stroke:rgba(169,199,255,.95);stroke-width:3}
     .dot{fill:rgba(169,199,255,.95)}
+    button,select{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#0b1220;color:#e7eefc}
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
       <div class="muted">📊 Dashboard</div>
-      <h1>RendaBot 24h — Crescimento diário</h1>
-      <div class="muted small" style="margin-top:6px">
+      <h1 style="margin:6px 0 0">RendaBot 24h — Crescimento diário</h1>
+      <div class="muted" style="margin-top:6px">
         <a href="/">Home</a> • <a href="/sitemap.xml">Sitemap</a> • <a href="/gerado/renda-1.html">Página 1</a>
       </div>
     </div>
 
-    <div class="row">
-      <div class="card">
-        <div class="muted">KPIs</div>
-        <div class="kpi" style="margin-top:10px">
-          <div class="pill">📄 Total: <b id="kpiTotal">—</b></div>
-          <div class="pill">➕ Hoje: <b id="kpiHoje">—</b></div>
-          <div class="pill">⏱️ Tempo: <b id="kpiTempo">—</b></div>
-          <div class="pill">☁️ Push: <b id="kpiPush">—</b></div>
-        </div>
-        <div class="muted small" style="margin-top:10px">Última atualização: <span id="kpiUpdated">—</span></div>
+    <div class="card">
+      <div class="muted">KPIs</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+        <div>📄 Total: <b id="kTotal">—</b></div>
+        <div>➕ Hoje: <b id="kHoje">—</b></div>
+        <div>⏱️ Tempo: <b id="kTempo">—</b></div>
+        <div>☁️ Push: <b id="kPush">—</b></div>
       </div>
-
-      <div class="card">
-        <div class="muted">Controles</div>
-        <div class="controls" style="margin-top:10px">
-          <label class="small">Período:
-            <select id="period">
-              <option value="14">14 dias</option>
-              <option value="30" selected>30 dias</option>
-              <option value="90">90 dias</option>
-              <option value="365">365 dias</option>
-            </select>
-          </label>
-          <button id="reloadBtn" style="padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#0b1220;color:#e7eefc;cursor:pointer">
-            Recarregar
-          </button>
-        </div>
-        <div class="muted small" style="margin-top:10px">Dica: este dashboard lê <code>/stats.json</code> gerado automaticamente pelo seu bot diário.</div>
-      </div>
+      <div class="muted" style="margin-top:10px">Última atualização: <span id="kUp">—</span></div>
     </div>
 
     <div class="card">
       <div class="muted">Gráfico (Total acumulado)</div>
-      <div class="svgWrap" style="margin-top:10px">
+      <div style="margin-top:10px">
+        <select id="period">
+          <option value="14">14 dias</option>
+          <option value="30" selected>30 dias</option>
+          <option value="90">90 dias</option>
+          <option value="365">365 dias</option>
+        </select>
+        <button id="reload">Recarregar</button>
+      </div>
+      <div style="margin-top:10px">
         <svg viewBox="0 0 1000 260" preserveAspectRatio="none" id="chart"></svg>
       </div>
-      <div class="muted small" id="chartHint" style="margin-top:8px"></div>
+      <div class="muted" id="hint" style="margin-top:8px"></div>
     </div>
 
     <div class="card">
       <div class="muted">Histórico</div>
       <div style="overflow:auto;margin-top:10px">
         <table>
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Gerado</th>
-              <th>Total</th>
-              <th>Tempo</th>
-              <th>Push</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
+          <thead><tr><th>Data</th><th>Gerado</th><th>Total</th><th>Tempo</th><th>Push</th></tr></thead>
+          <tbody id="tb"></tbody>
         </table>
       </div>
     </div>
@@ -101,27 +73,23 @@
 <script>
 async function load(){
   const period = Number(document.getElementById("period").value);
-  const res = await fetch("/stats.json?v=" + Date.now());
-  const data = await res.json();
-
-  const days = (data.days || []).slice().sort((a,b)=> (a.date||"").localeCompare(b.date||""));
+  const data = await fetch("/stats.json?v="+Date.now()).then(r=>r.json());
+  const days = (data.days||[]).slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
   const slice = days.slice(-period);
+  const last = slice[slice.length-1] || null;
 
-  const last = slice[slice.length-1] || (days[days.length-1]||null);
+  document.getElementById("kTotal").textContent = last ? (last.total ?? "—") : "—";
+  document.getElementById("kHoje").textContent  = last ? (last.generated ?? "—") : "—";
+  document.getElementById("kTempo").textContent = last ? ((last.durationSec ?? "—")+"s") : "—";
+  document.getElementById("kPush").innerHTML    = last ? (last.pushOk ? "<span class='ok'>OK</span>" : "<span class='bad'>Falhou</span>") : "—";
+  document.getElementById("kUp").textContent    = data?.meta?.updatedAt ?? "—";
 
-  document.getElementById("kpiTotal").textContent = last ? (last.total ?? "—") : "—";
-  document.getElementById("kpiHoje").textContent  = last ? (last.generated ?? "—") : "—";
-  document.getElementById("kpiTempo").textContent = last ? ((last.durationSec ?? "—") + "s") : "—";
-  document.getElementById("kpiPush").innerHTML    = last ? (last.pushOk ? "<span class='ok'>OK</span>" : "<span class='bad'>Falhou</span>") : "—";
-  document.getElementById("kpiUpdated").textContent = (data.meta && data.meta.updatedAt) ? data.meta.updatedAt : "—";
-
-  // tabela
-  const tb = document.getElementById("tbody");
+  const tb = document.getElementById("tb");
   tb.innerHTML = "";
   slice.slice().reverse().forEach(d=>{
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${d.date || ""}</td>
+      <td>${d.date||""}</td>
       <td>+${d.generated ?? ""}</td>
       <td>${d.total ?? ""}</td>
       <td>${(d.durationSec ?? "")}s</td>
@@ -130,70 +98,53 @@ async function load(){
     tb.appendChild(tr);
   });
 
-  // gráfico (total)
-  drawChart(slice.map(x=>({x:x.date, y:Number(x.total||0)})));
+  drawChart(slice.map(x=>({y:Number(x.total||0)})));
 }
 
 function drawChart(points){
   const svg = document.getElementById("chart");
   svg.innerHTML = "";
+  if(!points.length){ document.getElementById("hint").textContent="Sem dados ainda."; return; }
 
-  if (!points.length){
-    document.getElementById("chartHint").textContent = "Sem dados ainda. Rode o bot diário para criar entradas em stats.json.";
-    return;
-  }
+  const W=1000,H=260,padL=40,padR=20,padT=20,padB=30;
+  const innerW=W-padL-padR, innerH=H-padT-padB;
 
-  const W=1000, H=260, padL=40, padR=20, padT=20, padB=30;
-  const innerW = W - padL - padR;
-  const innerH = H - padT - padB;
+  const ys=points.map(p=>p.y), minY=Math.min(...ys), maxY=Math.max(...ys);
+  const spanY=Math.max(1,maxY-minY), n=points.length;
 
-  const ys = points.map(p=>p.y);
-  const minY = Math.min(...ys);
-  const maxY = Math.max(...ys);
-  const spanY = Math.max(1, maxY - minY);
-
-  // gridlines
   for(let i=0;i<=4;i++){
-    const y = padT + (innerH * i/4);
-    const line = document.createElementNS("http://www.w3.org/2000/svg","line");
-    line.setAttribute("x1", padL);
-    line.setAttribute("x2", W - padR);
-    line.setAttribute("y1", y);
-    line.setAttribute("y2", y);
+    const y=padT+(innerH*i/4);
+    const line=document.createElementNS("http://www.w3.org/2000/svg","line");
+    line.setAttribute("x1",padL); line.setAttribute("x2",W-padR);
+    line.setAttribute("y1",y); line.setAttribute("y2",y);
     line.setAttribute("class","gridline");
     svg.appendChild(line);
   }
 
-  // path
-  const n = points.length;
-  const path = document.createElementNS("http://www.w3.org/2000/svg","path");
-  let d = "";
+  const path=document.createElementNS("http://www.w3.org/2000/svg","path");
+  let d="";
   for(let i=0;i<n;i++){
-    const x = padL + (innerW * (n===1?0:i/(n-1)));
-    const y = padT + innerH - (innerH * ((points[i].y - minY)/spanY));
-    d += (i===0 ? "M" : "L") + x.toFixed(2) + " " + y.toFixed(2) + " ";
+    const x=padL+(innerW*(n===1?0:i/(n-1)));
+    const y=padT+innerH-(innerH*((points[i].y-minY)/spanY));
+    d += (i===0?"M":"L")+x.toFixed(2)+" "+y.toFixed(2)+" ";
   }
-  path.setAttribute("d", d.trim());
-  path.setAttribute("class","line");
+  path.setAttribute("d",d.trim()); path.setAttribute("class","line");
   svg.appendChild(path);
 
-  // dots
   for(let i=0;i<n;i++){
-    const x = padL + (innerW * (n===1?0:i/(n-1)));
-    const y = padT + innerH - (innerH * ((points[i].y - minY)/spanY));
-    const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
-    c.setAttribute("cx", x);
-    c.setAttribute("cy", y);
-    c.setAttribute("r", 4);
+    const x=padL+(innerW*(n===1?0:i/(n-1)));
+    const y=padT+innerH-(innerH*((points[i].y-minY)/spanY));
+    const c=document.createElementNS("http://www.w3.org/2000/svg","circle");
+    c.setAttribute("cx",x); c.setAttribute("cy",y); c.setAttribute("r",4);
     c.setAttribute("class","dot");
     svg.appendChild(c);
   }
 
-  document.getElementById("chartHint").textContent =
-    "Mostrando " + points.length + " dias • Total: " + points[points.length-1].y + " • Min: " + minY + " • Max: " + maxY;
+  document.getElementById("hint").textContent =
+    `Mostrando ${n} dias • Total ${points[n-1].y} • Min ${minY} • Max ${maxY}`;
 }
 
-document.getElementById("reloadBtn").onclick = load;
+document.getElementById("reload").onclick = load;
 document.getElementById("period").onchange = load;
 load();
 </script>
