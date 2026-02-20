@@ -1,68 +1,128 @@
 <!doctype html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>RendaBot 24h</title>
-  <meta name="description" content="Páginas SEO geradas sob demanda via Cloudflare Pages Functions + crescimento diário no Termux."/>
-  <style>
-    body{font-family:system-ui;margin:0;background:#0b1220;color:#e7eefc}
-    .wrap{max-width:980px;margin:0 auto;padding:18px}
-    .card{background:#111b33;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin:12px 0}
-    a{color:#a9c7ff;text-decoration:none}
-    a:hover{text-decoration:underline}
-    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08);margin-right:8px}
-    input{padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#0b1220;color:#e7eefc}
-    button{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#0b1220;color:#e7eefc;cursor:pointer}
-  </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Home — RendaBot 24h</title>
+  <meta name="description" content="Guia prático de renda extra, IA e negócios digitais. Conteúdo educativo." />
+  <link rel="canonical" href="https://renda-bot-24h.pages.dev/index.html" />
+  <link rel="stylesheet" href="/assets/style.css" />
+  <script defer src="/assets/app.js"></script>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="pill">Cloudflare Pages</div>
-      <div class="pill">Functions</div>
-      <div class="pill">Sem limite 20k</div>
-      <h1 style="margin:10px 0 0">RendaBot 24h</h1>
-      <p style="opacity:.8;margin-top:6px">
-        As páginas <b>/gerado/renda-N.html</b> são geradas na hora (não existem como arquivos),
-        então você pode crescer para 50k/100k+ sem estourar limite.
-      </p>
-      <p>
-        <a href="/dashboard.html">📊 Abrir Dashboard</a> •
-        <a href="/sitemap.xml">🗺️ Sitemap</a> •
-        <a href="/stats.json">📄 stats.json</a>
-      </p>
-    </div>
-
-    <div class="card">
-      <h2 style="margin:0 0 10px">Abrir página por número</h2>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-        <input id="n" type="number" value="1" min="1" style="width:160px">
-        <button onclick="go()">Abrir</button>
+  <div class="container">
+    <div class="top">
+      <a class="brand" href="/">
+        <div class="logo">🤖</div>
+        <div>
+          <div style="font-weight:900">RendaBot 24h</div>
+          <div style="color:var(--muted);font-size:12px">Portal prático • SEO • Conteúdo educativo</div>
+        </div>
+      </a>
+      <div class="nav">
+        <a class="pill" href="/">Home</a>
+        <a class="pill" href="/sobre.html">Sobre</a>
+        <a class="pill" href="/contato.html">Contato</a>
+        <a class="pill" href="/privacidade.html">Privacidade</a>
       </div>
-      <p style="opacity:.8;margin-top:10px">Exemplo: <code>/gerado/renda-123.html</code></p>
     </div>
 
-    <div class="card" id="info" style="opacity:.85">
-      Carregando total...
+    
+<div class="hero">
+  <div class="badge" style="display:inline-flex">✅ Portal Profissional</div>
+  <div class="h1">Renda extra, IA e negócios digitais — do zero ao avançado</div>
+  <div class="sub">Aqui você publica conteúdo organizado por categorias, com páginas legais, sitemap e base pronta para monetizar com afiliados/Adsense/produto próprio.</div>
+  <div class="kpi">
+    <span class="pill">Categorias: 6</span>
+    <span class="pill">Pronto p/ Cloudflare Pages</span>
+    <span class="pill">Estrutura SEO</span>
+  </div>
+  <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+    <a class="btn" href="#categorias">Ver categorias</a>
+    <a class="btn" href="/sobre.html">Entender o projeto</a>
+  </div>
+</div>
+
+<h2 id="categorias" style="margin:18px 0 8px">Categorias</h2>
+<div class="grid">
+  <a class="card" href="/categoria/renda-extra/">
+    <h3>Renda extra</h3>
+    <p>Guias, checklists e ideias práticas. Conteúdo organizado para rankear e monetizar.</p>
+    <div class="badges">
+      <span class="badge">SEO</span>
+      <span class="badge">Passo a passo</span>
+      <span class="badge">2026</span>
     </div>
+  </a>
+  
+  <a class="card" href="/categoria/inteligencia-artificial/">
+    <h3>Inteligência Artificial</h3>
+    <p>Guias, checklists e ideias práticas. Conteúdo organizado para rankear e monetizar.</p>
+    <div class="badges">
+      <span class="badge">SEO</span>
+      <span class="badge">Passo a passo</span>
+      <span class="badge">2026</span>
+    </div>
+  </a>
+  
+  <a class="card" href="/categoria/marketing-digital/">
+    <h3>Marketing Digital</h3>
+    <p>Guias, checklists e ideias práticas. Conteúdo organizado para rankear e monetizar.</p>
+    <div class="badges">
+      <span class="badge">SEO</span>
+      <span class="badge">Passo a passo</span>
+      <span class="badge">2026</span>
+    </div>
+  </a>
+  
+  <a class="card" href="/categoria/freelancer/">
+    <h3>Freelancer</h3>
+    <p>Guias, checklists e ideias práticas. Conteúdo organizado para rankear e monetizar.</p>
+    <div class="badges">
+      <span class="badge">SEO</span>
+      <span class="badge">Passo a passo</span>
+      <span class="badge">2026</span>
+    </div>
+  </a>
+  
+  <a class="card" href="/categoria/negocios-locais/">
+    <h3>Negócios Locais</h3>
+    <p>Guias, checklists e ideias práticas. Conteúdo organizado para rankear e monetizar.</p>
+    <div class="badges">
+      <span class="badge">SEO</span>
+      <span class="badge">Passo a passo</span>
+      <span class="badge">2026</span>
+    </div>
+  </a>
+  
+  <a class="card" href="/categoria/financas-pessoais/">
+    <h3>Finanças Pessoais</h3>
+    <p>Guias, checklists e ideias práticas. Conteúdo organizado para rankear e monetizar.</p>
+    <div class="badges">
+      <span class="badge">SEO</span>
+      <span class="badge">Passo a passo</span>
+      <span class="badge">2026</span>
+    </div>
+  </a>
   </div>
 
-<script>
-async function go(){
-  const n = Number(document.getElementById("n").value || 1);
-  location.href = "/gerado/renda-" + n + ".html";
-}
-(async()=>{
-  try{
-    const s = await fetch("/stats.json?v="+Date.now()).then(r=>r.json());
-    const total = s?.meta?.total ?? 0;
-    document.getElementById("info").innerHTML =
-      "📌 Total atual no contador: <b>"+total+"</b> páginas • Cresce pelo seu bot diário no Termux.";
-  }catch(e){
-    document.getElementById("info").textContent = "Não deu pra ler stats.json ainda.";
-  }
-})();
-</script>
+<hr />
+
+<div class="hero">
+  <h2 style="margin:0 0 8px">Próximo passo (depois do A)</h2>
+  <div class="sub">
+    1) Criar 30 artigos “pilares” (B) • 2) Colocar afiliados (C) • 3) Tráfego (Pinterest/Shorts) • 4) Escalar.
+  </div>
+</div>
+
+
+    <div class="footer">
+      <span>© RendaBot 24h • https://renda-bot-24h.pages.dev</span>
+      <span>•</span>
+      <a href="/sitemap.xml">sitemap</a>
+      <span>•</span>
+      <a href="/robots.txt">robots</a>
+    </div>
+  </div>
 </body>
 </html>

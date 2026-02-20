@@ -1,4 +1,18 @@
 {
-  "last": 500,
-  "updatedAt": "2026-02-19T03:31:14.170Z"
+  "site": {
+    "title": "RendaBot 24h",
+    "description": "Guia prático de renda extra, IA e negócios digitais. Conteúdo educativo.",
+    "baseUrl": "https://renda-bot-24h.pages.dev"
+  },
+  "portal": {
+    "version": "portal-v1",
+    "categories": [
+      {"slug":"renda-extra","name":"Renda extra","url":"/categoria/renda-extra/"},
+      {"slug":"inteligencia-artificial","name":"Inteligência Artificial","url":"/categoria/inteligencia-artificial/"},
+      {"slug":"marketing-digital","name":"Marketing Digital","url":"/categoria/marketing-digital/"},
+      {"slug":"freelancer","name":"Freelancer","url":"/categoria/freelancer/"},
+      {"slug":"negocios-locais","name":"Negócios Locais","url":"/categoria/negocios-locais/"},
+      {"slug":"financas-pessoais","name":"Finanças Pessoais","url":"/categoria/financas-pessoais/"}
+    ]
+  }
 }
