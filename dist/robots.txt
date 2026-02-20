@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+
 Sitemap: https://renda-bot-24h.pages.dev/sitemap.xml
